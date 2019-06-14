@@ -11,17 +11,16 @@
 HELLO_WORLD_VERSION = 1.0.0
 HELLO_WORLD_SOURCE = hello_world-$(HELLO_WORLD_VERSION).tgz
 
-####  WHERE TO DOWNLOAD YORU SOURCE FROM
+#STRIP_COMPONENTS tell the tar how many directory structures to 
+# strip off the front end of your archive. (See directive in manual)
+HELLO_WORLD_STRIP_COMPONENTS=0
+####  WHERE TO DOWNLOAD YOUR SOURCE FROM
 
-# this does not work, need to figure out the proper syntax.
 HELLO_WORLD_SITE_METHOD = wget
 HELLO_WORLD_SITE = root@10.11.65.84:80
-
-#HELLO_WORLD_SITE_METHOD = local
+#HELLO_WORLD_SITE_METHOD = file
 #HELLO_WORLD_SITE = /scratch/hello_world
 
-#HELLO_WORLD_SITE_METHOD = http
-#HELLO_WORLD_SITE = https://github.com/fmcoastal
 
 ####  END Download Options
 
@@ -36,7 +35,7 @@ define HELLO_WORLD_BUILD_CMDS
         $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D) all
 endef
 
-#INSTALL COMMAND LINE
+#INSTALL COMMAND LINE - places executible in resulting /bin directory
 #  if defined, buildroot will execute.
 define HELLO_WORLD_INSTALL_TARGET_CMDS
         $(INSTALL) -D -m 0755 $(@D)/hello_world $(TARGET_DIR)/bin

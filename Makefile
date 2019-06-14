@@ -16,6 +16,7 @@ hello_world:
 
 
 .phony: vars
-	echo " CC    $(CC)
-	echo " CC    $(CCFLAGS)
+vars:
+	echo " CC    $(CC)     "
+	echo " CC    $(CCFLAGS) "
 

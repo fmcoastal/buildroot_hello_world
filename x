@@ -31,7 +31,9 @@ tar -czvf $FILENAME *
 #mv $FILENAME ../.
 
 banner "generate md5 hash of file "
-md5sum $FILENAME > $HASHNAME
+hash=$(md5sum $FILENAME)    
+
+echo "md5sum  $hash " > $HASHNAME
 
 
 
