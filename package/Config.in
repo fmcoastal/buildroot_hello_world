@@ -1,0 +1,9 @@
+config BR2_PACKAGE_HELLO_WORLD
+	bool "hello_world"
+	help
+	  hello world is a simple user mode application 
+	
+	  https://github.org/fmcoastal/linux_driver
+	  scp root@10.11.64/82:/scratch/hello_world
+
+comment "I do not have any comments"

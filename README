@@ -1,0 +1,144 @@
+***************************************************
+*
+*  Buildroot- hello_world example.   
+*
+***************************************************    
+
+
+This is a simple buildroot project example.  The 
+instructions below describe where to place the files.
+
+I have tried to add some comments in the file to 
+describe some of the components.   I am sure the
+Instructions will improve after I forgot what I did
+and have to figure this out again.
+
+References:
+
+   I. https://github.com/maximeh/buildroot/blob/master/docs/manual/adding-packages-kernel-module.txt
+  II. https://stackoverflow.com/questions/19783795/how-to-add-my-own-software-to-a-buildroot-linux-package
+ III. https://buildroot.org/downloads/manual/manual.html#writing-rules-mk
+  VI. http://lists.busybox.net/pipermail/buildroot/2014-August/103600.html
+   V. https://buildroot.org/downloads/manual/manual.html#_infrastructure_for_packages_building_kernel_modules 
+
+
+Directory Structure you need to have in Buildroot
+
+  <SDK> 
+     |
+     - buildroot
+     |      |
+     |      - package
+     |      |      |
+     |      |      - hello_world   {create here or below -> place the files below )      
+     |      |      |      |
+     |      |      |      - Config.in
+     |      |      |      |
+     |      |      |      - hello_world.mk
+     |      |      |      |
+     |      |      |      - (optional- any files/folders you want)
+     |      |      |
+     |      |      - <Other standard OpenWRT Packages>     
+     |      |      |
+     |      |      v 
+     |      |   
+     |      - <Other buildroot folders>
+     |
+      - buildroot-external-marvell
+     |      |
+     |      - package
+     |      |      |
+     |      |      - hello_world     (create this folder here or above)      
+     |      |      |      |
+     |      |      |      - Config.in
+     |      |      |      |
+     |      |      |      - hello_world.mk
+     |      |      |      |
+     |      |      |      - (optional- any files/folders you want)
+     |      |      |
+     |      |      - <Other Marvell based OpenWRT Packages>     
+     |      |      |
+     |      |      v 
+     |      - <Other external-buildroot-marvell  folders>
+     |
+     - "output" and other sdk folders
+     |  
+     v
+
+=> File Info:
+
+    "Config.in" -> used by Buildroot's "make menuconfig" command to 
+      place entries in the menu. By default, the hello_world package 
+      is not included by default. (equivalent to Kconfig in linux kernel) 
+
+    "Hello_world.mk" -> Tells buildroot
+        a) where to find the package source code 
+        b) what mechanism to download/fetch 
+        c) how/when to build/compile the package
+        d) where the resulting executible should be placed in the 
+              target System.
+
+
+Files from Github
+
+     - hello_world
+     |      |
+     |      - Config.in
+     |      |
+     |      - hello_world.mk  
+     |      |  
+     |      - hello_world-<REVISION>.tgz
+     |      |  
+     |      - README  (This file)
+     |      |  
+     |      - src
+     |             | 
+     |             - hello_world.c
+     |             | 
+     |             - Makefile
+     |             | 
+     |             - x     (bash file to create hello_world-<REVISION>.tgz
+
+ 
+=> Comments on my implementation:
+
+    1) Buildroot can download a package via multiple mechanisms.
+       a) I have configured the hello_world.mk file to look for 
+          hello_world.tgz on my local machine at  
+             <sdk>/<buildroot>/package/hello_world/hello_world.tgz 
+       b) you can also fetch project source via wget, http, or scp. 
+
+    2) I set up a Github progject that you can "clone" direclty to 
+         the project directory.  You can also "clone" the code to 
+         any other location and copy the files to the appropriate
+         location in the buildroot <SDK> structure.   
+       a) taking into account your git/svn structure, you may want 
+         to modify hello_world.mk to point to the location of your 
+         source/download.   
+    3) <REVISION> of the package is defined in hello_world.mk
+
+
+=> Install Instructions - manual Placement
+    
+    1) Determine which package location you want to install the
+         hello_world package in.  For me, I will use the
+         buildroot-external-marvell/package location.
+
+    2) cd buildroot or buildroot-external
+
+    cd  /sdk/<SDK>/buildroot-external-marvell/package
+
+
+
+=> Install Instructions -  github clone to "project" directory
+
+------------------------------------------     
+link the file on your http server
+
+  ln hello_world-1.0.0.tgz /var/www/html/hello_world-1.0.0.tgz
+
+
+test you can get the file
+   wget root@10.11.65.84:80/hello_world-1.0.0.tgz
+
+-------------------------------------------
