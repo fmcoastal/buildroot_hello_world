@@ -1,0 +1,46 @@
+#! /bin/bash
+
+# this file takes the files from the git clone process and writes the necessary files 
+#   to the buildroot-external-marvell/package location.
+
+
+
+if [ -d  tmp_pkg ] ; then
+  rm -rf tmp_pkg
+fi
+
+
+mkdir -p tmp_pkg
+pushd tmp_pkg
+
+TEST=1
+
+if [ $TEST == 1] ; then
+  wget http://10.11.65.84:80/hello_world-1.0.0.tgz
+  tar -xzvf hello_world-1.0.0.tgz
+else
+  git clone http://github.com/fmcoatal/buildroot_hello_world
+fi
+
+
+#if the directory exists, delete it
+if [ -d  /sdk/SDK19061/buildroot-external-marvell/package/hello_world ] ; then
+  rm -rf /sdk/SDK19061/buildroot-external-marvell/package/hello_world
+fi
+
+# create the directory and populate the files
+
+mkdir -p  /sdk/SDK19061/buildroot-external-marvell/package/hello_world
+cp ./package/hello_world.mk  /sdk/SDK19061/buildroot-external-marvell/package/hello_world/.
+cp ./package/Config.in  /sdk/SDK19061/buildroot-external-marvell/package/hello_world/.
+
+
+ls   /sdk/SDK19061/buildroot-external-marvell/package/hello_world/*
+cat  /sdk/SDK19061/buildroot-external-marvell/package/hello_world/Config.in
+cat  /sdk/SDK19061/buildroot-external-marvell/package/hello_world/hello_world.mk
+
+
+popd
+
+echo "Done"
+

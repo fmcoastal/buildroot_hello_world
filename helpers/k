@@ -1,0 +1,37 @@
+#!/bin/bash
+# this script should be placed in the "TARGET_DIRECTORY"
+#  basically, it removed all parts of a Package
+#       The script is a simple script. - just modify for your use case.
+
+TARGET_DIR=/sdk/SDK19061/a80x0_mcbin-release-output
+
+PACKAGE_NAME=hello_world
+PACKAGE_NAME_FULL=hello_world-1.0.0
+
+
+echo "****************"
+echo "before"
+echo "****************"
+ls -la $TARGET_DIR/build/$PACKAGE_NAME_FULL
+
+echo "****************"
+echo "remove"
+echo "****************"
+rm -rf $TARGET_DIR/build/$PACKAGE_NAME_FULL
+
+echo "****************"
+echo "after"
+echo "****************"
+ls -la $TARGET_DIR/build/$PACKAGE_NAME_FULL
+
+
+echo "****************"
+echo "delete the cached downloaded"
+echo "****************"
+rm -rf  /sdk/br2_shared_downloads/$PACKAGE_NAME
+
+
+echo "****************"
+echo "done"
+echo "****************"
+
