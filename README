@@ -83,62 +83,139 @@ Files from Github
 
      - hello_world
      |      |
-     |      - Config.in
+     |      - hello.c
      |      |
-     |      - hello_world.mk  
-     |      |  
-     |      - hello_world-<REVISION>.tgz
+     |      - Makefile 
      |      |  
      |      - README  (This file)
      |      |  
-     |      - src
+     |      - x     (bash file to create hello_world-<REVISION>.tgz
+     |      |  
+     |      - package 
      |             | 
-     |             - hello_world.c
+     |             - hello_world.mk
      |             | 
-     |             - Makefile
+     |             - Config.in
+     |      
+     |      - helpers
      |             | 
-     |             - x     (bash file to create hello_world-<REVISION>.tgz
+     |             - k -> A bash script. Should be placed in the buildroot
+     |                     <output> directory.  Does a clean removal of 
+     |                     any cached components of the "package", such 
+     |                     that when you run "make hello_world", the sources
+     |                     tar file will be re-downloaded from the source. 
+     |             | 
+     |             - Trans -> a bash script which can be run from anywhere.
+     |                        The script deletes the package in the buildroot
+     |                        directory, and then updates the Config.in and 
+     |                        hellow_world.mk from Github. Useful when testing
+     |                        changes to the .mk file. 
+     |             | 
+
 
  
 => Comments on my implementation:
 
-    1) Buildroot can download a package via multiple mechanisms.
-       a) I have configured the hello_world.mk file to look for 
-          hello_world.tgz on my local machine at  
+    1) Buildroot can download a package via multiple mechanisms.  
+       a) I have configured hello_world.mk to get the "hello_world.tgz"
+            source code from my web server on Hooch (10.11.65.84:80) 
+       b) The "hello_world.mk" also has lines commented out which will
+          fetch the "hello_world.tgz" from a local directory on the
+          build machine. The locaion I have specified in "hellow_world.mk" 
+          is:  
              <sdk>/<buildroot>/package/hello_world/hello_world.tgz 
-       b) you can also fetch project source via wget, http, or scp. 
+       c) you can also fetch project source via wget, http, or scp.
+       d) WARNING:  buildroot will add "/" for you as part of the 
+           target location.  Buildroot will by default strip the first 
+           "path directory" in your .tgz file.  My .mk file overrides this
+           to not strip any directory path.      
 
-    2) I set up a Github progject that you can "clone" direclty to 
-         the project directory.  You can also "clone" the code to 
-         any other location and copy the files to the appropriate
-         location in the buildroot <SDK> structure.   
-       a) taking into account your git/svn structure, you may want 
-         to modify hello_world.mk to point to the location of your 
-         source/download.   
+    2) I set up a Github progject that you "clone" to a working directory.  
+         From there, you must manually copy project files to the proper 
+         location in buildroot.  Additionally you must modify buildroot's 
+         make and configure files to have the hello_world package build as 
+         part of calliing make.   
+         
     3) <REVISION> of the package is defined in hello_world.mk
 
 
-=> Install Instructions - manual Placement
-    
-    1) Determine which package location you want to install the
-         hello_world package in.  For me, I will use the
-         buildroot-external-marvell/package location.
+=> Get the files
+   1)  get the hello_world package from Github, place the source in the top 
+       level directory "/scratch"
+   
+   mkdir -p /scratch
+   cd /scratch
+   git clone https://github.com/fmcoastal/buildroot_hello_world.git  hello_world
 
-    2) cd buildroot or buildroot-external
+   2) the files and file structure should look like what is shown above. 
+
+   3) build the source tar file required by build root for package source files. 
+       the script "x" will put the contentes of the hello_world directory into 
+       a .tgz file in a format which buildroot will later explode into the 
+       directory  <sdk>/<output>/build/hello_world-1.0.0  when Make is run.
+   
+       cd /scratch/hello_world
+       ./x
+   3.1) put the resulting .tgz file in the location specified in the 
+       "package/hello_world.mk" location.  Recall from above that I am using 
+       a http server for buildroot to fetch from.  (you can use a local directory)
+
+       scp /scratch/hello_world-1.0.0.tgz   root@10.11.65.84:/var/www/html/.
+    
+
+=> Configure buildroot  - manual Placement
+    
+    4) Determine which package location you want to install the
+         hello_world package in.  For me, I will use the
+         <SDK>/buildroot-external-marvell/package location.  
+        (You could also place it in <SDK>/buildroot/package location)
+
+    5) cd buildroot or buildroot-external
 
     cd  /sdk/<SDK>/buildroot-external-marvell/package
 
+    6) Make a directory hello_world
+
+    mkdir -p hello_world
+
+    7) copy Config.in and hello_world.mk from your git download
+       to your
+
+    cd hello_world
+    cp /scratch/hello_world/package/Config.in .
+    cp /scratch/hello_world/package/hello_world.mk .
+ 
+    8) Modify <sdk>/buildroot-external-marvell/Config.in to have it look in
+       the packages/hello_world directory for a Config.in file
+
+       add the following to the last line in the "<sdk>/buildroot-external
+       -marvell/Config.in" file
+
+       source "$BR2_EXTERNAL_MARVELL_SDK_PATH/package/hello_world/Config.in"
+    
+
+    9) (REFERENCE) the <sdk>/buildroot-external-marvell/external.mk is written to 
+       walk through each directory in the Package file and look for a .mk file when 
+       the "make" is executed in the <output> directory.
+ 
+       The hello_world.mk file tells build root about revision info, where to 
+       find source code, how to unpack source code. In addition, the are multiple
+       other defines which can be implemented to support the install process. Look 
+       specifically at 
+       
+        https://buildroot.org/downloads/manual/manual.html#writing-rules-mk
+        and 
+        https://buildroot.org/downloads/manual/manual.html#hooks
 
 
-=> Install Instructions -  github clone to "project" directory
+     10) if everything is configured correctly, you should be able to execute 
+        "make hello_world" in your <output> dirctory.  Buildroot will:
+            create the folling directory:  "<output>/build/hello_world-1.0.0"  
+         the folder will have:
+               I.  your source code in it. 
+              II.  the compiled output.  (hello)
+             III.  and if you rebuild your rootfs, a copy of the "hello" executible
+                   will be in the /bin directory. 
+       
+         transfer the executable to your target, and run hello!
 
-------------------------------------------     
-link the file on your http server
-
-  ln hello_world-1.0.0.tgz /var/www/html/hello_world-1.0.0.tgz
-
-
-test you can get the file
-   wget root@10.11.65.84:80/hello_world-1.0.0.tgz
-
--------------------------------------------
