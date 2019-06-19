@@ -116,19 +116,35 @@ Files from Github
  
 => Comments on my implementation:
 
-    1) Buildroot can download a package via multiple mechanisms.  
+    1) Buildroot can download a package via multiple mechanisms.
        a) I have configured hello_world.mk to get the "hello_world.tgz"
-            source code from my web server on Hooch (10.11.65.84:80) 
+            source code from my web server on Hooch (10.11.65.84:80)
+
+          from hello_world.mk:
+            HELLO_WORLD_SITE_METHOD = wget
+            HELLO_WORLD_SITE = root@10.11.65.84:80
+
        b) The "hello_world.mk" also has lines commented out which will
           fetch the "hello_world.tgz" from a local directory on the
-          build machine. The locaion I have specified in "hellow_world.mk" 
-          is:  
-             <sdk>/<buildroot>/package/hello_world/hello_world.tgz 
+          build machine. The locaion I have specified in "hellow_world.mk"
+          is:
+             /scratch/hello_world/hello_world.tgz
+
+          from hello_world.mk:
+            #HELLO_WORLD_SITE_METHOD = file
+            #HELLO_WORLD_SITE = /scratch/hello_world
+
        c) you can also fetch project source via wget, http, or scp.
-       d) WARNING:  buildroot will add "/" for you as part of the 
-           target location.  Buildroot will by default strip the first 
+
+       d) WARNING:  buildroot will add "/" for you as part of the
+           target/"HELLO_WORLD_SITE"  location.
+
+       e) WARNING: Buildroot will by default strip the first
            "path directory" in your .tgz file.  My .mk file overrides this
-           to not strip any directory path.      
+           to not strip any directory path.
+
+          from hello_world.mk:
+            HELLO_WORLD_STRIP_COMPONENTS=0
 
     2) I set up a Github progject that you "clone" to a working directory.  
          From there, you must manually copy project files to the proper 
