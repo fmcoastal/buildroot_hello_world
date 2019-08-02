@@ -8,10 +8,23 @@
 
 CCFLAGS=-g
 
-all: vars hello_world
+all: vars hello
 
-hello_world:
-	$(CC)   -o hello_world  hello.c
+
+_world: hello.o Makefile
+	$(CC)   -o hello  hello.o
+
+
+hello_world.o:  hello.c
+	$(CC)   -o hello.o  hello.c
+
+
+
+clean:
+	rm -rf *.o
+	rm -rf hello_world
+
+
 
 
 
@@ -19,4 +32,4 @@ hello_world:
 vars:
 	echo " CC    $(CC)     "
 	echo " CC    $(CCFLAGS) "
-
+	echo " LD    $(LD)     "
