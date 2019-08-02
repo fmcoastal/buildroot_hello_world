@@ -3,7 +3,8 @@
 # this file takes the files from the git clone process and writes the necessary files 
 #   to the buildroot-external-marvell/package location.
 
-
+PACKAGE_NAME=hello_world
+BASE_DIR=/home/fsmith/marvell/sdk/SDK190603/SDK10.0_19.06.3
 
 if [ -d  tmp_pkg ] ; then
   rm -rf tmp_pkg
@@ -24,20 +25,20 @@ fi
 
 
 #if the directory exists, delete it
-if [ -d  /sdk/SDK19061/buildroot-external-marvell/package/hello_world ] ; then
-  rm -rf /sdk/SDK19061/buildroot-external-marvell/package/hello_world
+if [ -d  $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME ] ; then
+  rm -rf $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME
 fi
 
 # create the directory and populate the files
 
-mkdir -p  /sdk/SDK19061/buildroot-external-marvell/package/hello_world
-cp ./package/hello_world.mk  /sdk/SDK19061/buildroot-external-marvell/package/hello_world/.
-cp ./package/Config.in  /sdk/SDK19061/buildroot-external-marvell/package/hello_world/.
+mkdir -p  $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME
+cp ./package/hello_world.mk  $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME/.
+cp ./package/Config.in  $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME/.
 
 
-ls   /sdk/SDK19061/buildroot-external-marvell/package/hello_world/*
-cat  /sdk/SDK19061/buildroot-external-marvell/package/hello_world/Config.in
-cat  /sdk/SDK19061/buildroot-external-marvell/package/hello_world/hello_world.mk
+ls   $BASE_DIR/buildroot-external-marvell/package/$PACKAE_NAME/*
+cat  $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME/Config.in
+cat  $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME/$PACKAGE_NAME.mk
 
 
 popd
