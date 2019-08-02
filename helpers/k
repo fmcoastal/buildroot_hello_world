@@ -1,9 +1,11 @@
 #!/bin/bash
-# this script should be placed in the "TARGET_DIRECTORY"
+# this script should be placed in the target "OUTPUT_DIR" 
+#       eg:cn96xx-release-output
 #  basically, it removed all parts of a Package
 #       The script is a simple script. - just modify for your use case.
 
-TARGET_DIR=/sdk/SDK19061/a80x0_mcbin-release-output
+BASE_DIR=/home/fsmith/marvell/sdk/SDK190603/SDK10.0_19.06.3-src
+OUTPUT_DIR=$BASE_DIR/a80x0_mcbin-release-output
 
 PACKAGE_NAME=hello_world
 PACKAGE_NAME_FULL=hello_world-1.0.0
@@ -12,24 +14,33 @@ PACKAGE_NAME_FULL=hello_world-1.0.0
 echo "****************"
 echo "before"
 echo "****************"
-ls -la $TARGET_DIR/build/$PACKAGE_NAME_FULL
+ls -la $OUTPUT_DIR/build/$PACKAGE_NAME_FULL
 
 echo "****************"
 echo "remove"
 echo "****************"
-rm -rf $TARGET_DIR/build/$PACKAGE_NAME_FULL
+rm -rf $OUTPUT_DIR/build/$PACKAGE_NAME_FULL
 
 echo "****************"
 echo "after"
 echo "****************"
-ls -la $TARGET_DIR/build/$PACKAGE_NAME_FULL
+ls -la $OUTPUT_DIR/build/$PACKAGE_NAME_FULL
 
 
-echo "****************"
-echo "delete the cached downloaded"
-echo "****************"
-rm -rf  /sdk/br2_shared_downloads/$PACKAGE_NAME
+# look to see if Download cache location has been defined.
+# if so, delete the Cache.
+PKG_CACHE=$(env | grep BR2_DL_DIR )
+if [ "$PKG_CACHE" != "" ] ; then  
 
+   echo "****************"
+   echo "delete the cached downloaded"
+   echo "****************"
+   rm -rf  $BR2_LD_DIR/$PACKAGE_NAME
+else
+   echo "****************"
+   echo "Cached Downloads not used"
+   echo "****************"
+fi
 
 echo "****************"
 echo "done"
