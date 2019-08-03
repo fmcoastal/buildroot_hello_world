@@ -10,20 +10,28 @@ OUTPUT_DIR=$BASE_DIR/a80x0_mcbin-release-output
 PACKAGE_NAME=hello_world
 PACKAGE_NAME_FULL=hello_world-1.0.0
 
+GREEN=$'\e[32m'
+NORMAL=$'\e[0m'
 
+echo $GREEN
 echo "****************"
-echo "before"
-echo "****************"
+echo "before:"
+echo $NORMAL 
+echo "ls -la  $OUTPUT_DIR/build/$PACKAGE_NAME_FULL"
 ls -la $OUTPUT_DIR/build/$PACKAGE_NAME_FULL
 
+echo $GREEN
 echo "****************"
-echo "remove"
-echo "****************"
+echo "remove:"
+echo $NORMAL 
+echo "rm -rf $OUTPUT_DIR/build/$PACKAGE_NAME_FULL"
 rm -rf $OUTPUT_DIR/build/$PACKAGE_NAME_FULL
 
+echo $GREEN
 echo "****************"
-echo "after"
-echo "****************"
+echo "after:  "
+echo $NORMAL 
+echo "ls -la $OUTPUT_DIR/build/$PACKAGE_NAME_FULL"
 ls -la $OUTPUT_DIR/build/$PACKAGE_NAME_FULL
 
 
@@ -32,17 +40,27 @@ ls -la $OUTPUT_DIR/build/$PACKAGE_NAME_FULL
 PKG_CACHE=$(env | grep BR2_DL_DIR )
 if [ "$PKG_CACHE" != "" ] ; then  
 
+   echo $GREEN
    echo "****************"
-   echo "delete the cached downloaded"
+   echo "delete the cached downloaded: $BR2_LD_DIR/$PACKAGE_NAME"
+   echo $NORMAL 
+   echo "rm -rf  $BR2_LD_DIR/$PACKAGE_NAME"
+   rm -rf  /sdk/BR2_LD_DIR/$PACKAGE_NAME
    echo "****************"
-   rm -rf  $BR2_LD_DIR/$PACKAGE_NAME
+   echo "validate cash deleted..."
+   echo "ls -la /sdk/BR2_LD_DIR/$PACKAGE_NAME"
+   ls -la /sdk/BR2_LD_DIR/$PACKAGE_NAME
 else
+   echo $GREEN
    echo "****************"
-   echo "Cached Downloads not used"
-   echo "****************"
+   echo "Cached Downloads not found/used ?? "
+   echo $NORMAL 
+   echo "env |grep /sdk/BR2_LD_DIR  "
+   echo  $PKG_CACHE
 fi
 
+echo $GREEN
 echo "****************"
 echo "done"
 echo "****************"
-
+echo $NORMAL 
