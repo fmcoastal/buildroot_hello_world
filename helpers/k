@@ -37,19 +37,24 @@ ls -la $OUTPUT_DIR/build/$PACKAGE_NAME_FULL
 
 # look to see if Download cache location has been defined.
 # if so, delete the Cache.
-PKG_CACHE=$(env | grep BR2_DL_DIR )
+PKG_CACHE=$(cat ~/.bashrc | grep BR2_DL_DIR )
 if [ "$PKG_CACHE" != "" ] ; then  
-
    echo $GREEN
+   echo "PKG_CACHE = $PKG_CACHE"
+   #get the remaining strign after the '=' signe
+   BR2_DL_DIRECTORY="${PKG_CACHE#*=}"
+   #echo "BR2_DL_DIRECTORY: $BR2_DL_DIRECTORY"
+
    echo "****************"
-   echo "delete the cached downloaded: $BR2_LD_DIR/$PACKAGE_NAME"
+   echo "delete the cached downloaded: $BR2_DL_DIRECTORY/$PACKAGE_NAME"
+
    echo $NORMAL 
-   echo "rm -rf  $BR2_LD_DIR/$PACKAGE_NAME"
-   rm -rf  /sdk/BR2_LD_DIR/$PACKAGE_NAME
+   echo "rm -rf  $BR2_DL_DIRECTORY/$PACKAGE_NAME"
+   rm -rf  $BR2_DL_DIRECTORY/$PACKAGE_NAME
    echo "****************"
    echo "validate cash deleted..."
-   echo "ls -la /sdk/BR2_LD_DIR/$PACKAGE_NAME"
-   ls -la /sdk/BR2_LD_DIR/$PACKAGE_NAME
+   echo "ls -la $BR2_DL_DIRECTORY/$PACKAGE_NAME"
+   ls -la $BR2_DL_DIRECTORY/$PACKAGE_NAME
 else
    echo $GREEN
    echo "****************"
