@@ -6,30 +6,28 @@
 
 
 
-CCFLAGS=-g
-
-all: vars hello
+CCFLAGS=-g -O0 -c
 
 
-_world: hello.o Makefile
-	$(CC)   -o hello  hello.o
+all: vars hello_world
 
+
+hello_world: hello_world.o Makefile
+	$(CC) $(LDFLAGS)  -o hello_world  hello_world.o
 
 hello_world.o:  hello.c
-	$(CC)   -o hello.o  hello.c
-
+	$(CC) $(CCFLAGS)  -o hello_world.o  hello.c
 
 
 clean:
 	rm -rf *.o
 	rm -rf hello_world
-
-
-
+	rm -rf .stamp_*
 
 
 .phony: vars
 vars:
-	echo " CC    $(CC)     "
-	echo " CC    $(CCFLAGS) "
-	echo " LD    $(LD)     "
+	echo " CC:      $(CC)      "
+	echo " CCFLAGS: $(CCFLAGS) "
+	echo " LD:      $(LD)      "
+	echo " LDFLAGS: $(LDFLAGS) "
