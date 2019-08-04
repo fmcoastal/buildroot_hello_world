@@ -3,13 +3,77 @@
 # this file takes the files from the git clone process and writes the necessary files 
 #   to the buildroot-external-marvell/package location.
 
-PACKAGE_NAME=hello_world
-BASE_DIR=/home/fsmith/marvell/sdk/SDK190603/SDK10.0_19.06.3
+#this is a little bit of a circular reference
+#   If you have the files from github, they are not compressed
+#
+#   You may have a tar file of the package.  if this is the case,
+#    this script will decompress the tarball, write the files to 
+#    the proper location, and modify the upper level .Config to 
+#    have Hellow World Built in.
 
+PACKAGE_NAME="hello_world_test"
+PACKAGE_NAME_REV="$PACKAGE_NAME"-1.0.0
+OUTPUT_DIR=a80x0_mcbin-release-output
+BASE_DIR=/home/fsmith/marvell/sdk/SDK190603/SDK10.0_19.06.3-src
+
+
+SOURCE_TYPE="github"
+#SOURCE_TYPE="tarball"
+
+RED=$'\e[31m'
+GREEN=$'\e[32m'
+YELLOW=$'\e[33m'
+CYAN=$'\e[36m'
+NORMAL=$'\e[0m'
+INVERT=$'\e[7m'
+
+
+banner() {
+echo ""
+echo "$GREEN********"
+echo "* $1"
+echo "********$NORMAL"
+}
+
+
+
+#BUILDROOT_EXTERNAL_DIR
+BR_EXT_DIR=$BASE_DIR/buildroot-external-marvell
+
+# check if "buildroot-external-marvel/package/<PACKAGENAME> exists.
+#   if it does, we will leave it alone. 
+banner "see if $PR_EXT_DIR/package/$PACKAGE_NAME exists"
+if [ ! -d $BR_EXT_DIR/package/$PACKAGE_NAME ] ; then
+    banner  "$PACKAGE_NAME does not exist, Will create"
+    echo "mkdir -p $BR_EXT_DIR/package/$PACKAGE_NAME "
+    mkdir -p $BR_EXT_DIR/package/$PACKAGE_NAME 
+else
+    echo "package <BASE_DIR>/buildroot-external-marvell/package/$PACKAGE_NAME exists"
+
+#   #if the directory exists, delete it
+#      rm -rf $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME
+
+fi
+
+
+
+if [ "$SOURCE_TYPE" == "github" ] ; then
+    # assumption here is that the <github>/repository exists.  
+    #    the location of the package files needed are 
+    #    ../package/Config.in
+    #    ../package/<PACKAGE_NAME>.mk
+    SRC_DIR=../package
+  
+
+elif [ "$SOURCE_TYPE" == "tarball" ] ; then
+# assumption here is that the <github>/x script has been used
+#    to create a hello_world-1.0.0.tgz file.
+# For now, assume we are in the <github>/helper/ directory
+
+# create a temporary directory and change directory to it.
 if [ -d  tmp_pkg ] ; then
   rm -rf tmp_pkg
 fi
-
 
 mkdir -p tmp_pkg
 pushd tmp_pkg
@@ -24,24 +88,51 @@ else
 fi
 
 
-#if the directory exists, delete it
-if [ -d  $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME ] ; then
-  rm -rf $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME
-fi
-
-# create the directory and populate the files
-
-mkdir -p  $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME
-cp ./package/hello_world.mk  $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME/.
-cp ./package/Config.in  $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME/.
-
-
-ls   $BASE_DIR/buildroot-external-marvell/package/$PACKAE_NAME/*
-cat  $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME/Config.in
-cat  $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME/$PACKAGE_NAME.mk
-
+cp ../project/Config.in 
+cp ../project/$PACKAGE_NAME.mk 
 
 popd
+
+else   # no target define
+
+  echo " unrecognized source type. "
+
+fi 
+
+# copy the files 
+  banner "Move Config.in and <PACKAGE_NAME>.mk to the <sdk>/buildroot-external-marvell/package" 
+  echo " cp ../package/Config.in $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME/."
+  cp ../package/Config.in $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME/.
+  echo " cp ../package/$PACKAGE_NAME.mk  $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME/."
+  cp ../package/$PACKAGE_NAME.mk  $BASE_DIR/buildroot-external-marvell/package/$PACKAGE_NAME/.
+ 
+
+
+
+banner " add our Package to the \"<SDK_BASE>/buildroot-external-marvell/Compile.in\" list"
+
+# this is not a very exact match.   it will error with packages of similar names
+#          eg:   hello_world would not be installed if there were a package  hello_world_test 
+
+TEXT=$(cat $BR_EXT_DIR/Config.in | grep $PACKAGE_NAME)
+if [ "$TEXT" == "" ] ; then
+   echo "echo source \"\$BR2_EXTERNAL_MARVELL_SDK_PATH/package/$PACKAGE_NAME/Config.in\" >> $BR_EXT_DIR/Config.in"
+   echo "source \"\$BR2_EXTERNAL_MARVELL_SDK_PATH/package/$PACKAGE_NAME/Config.in\"" >> $BR_EXT_DIR/Config.in
+else
+   echo "$RED found the following entry in the Config.in Directory $NORMAL " 
+   echo "$TEXT"
+fi
+
+banner "contents of Config.in"
+cat  $BR_EXT_DIR/Config.in
+
+banner "contents of:  <SDK>/buildroot-externel-marvell/package/$PACKAGE_NAME/"
+pushd $BR_EXT_DIR/package/$PACKAGE_NAME >>/dev/zero
+echo "ls -la   * "
+ls -la  *
+#cat  Config.in
+#cat  $PACKAGE_NAME.mk
+popd  >>/dev/zero
 
 echo "Done"
 
