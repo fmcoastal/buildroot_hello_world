@@ -11,13 +11,13 @@
 #    the proper location, and modify the upper level .Config to 
 #    have Hellow World Built in.
 
-PACKAGE_NAME="hello_world_test"
+PACKAGE_NAME="hello_world"
 PACKAGE_NAME_REV="$PACKAGE_NAME"-1.0.0
 OUTPUT_DIR=a80x0_mcbin-release-output
 BASE_DIR=/home/fsmith/marvell/sdk/SDK190603/SDK10.0_19.06.3-src
 
 
-SOURCE_TYPE="github"
+#SOURCE_TYPE="github"
 #SOURCE_TYPE="tarball"
 
 RED=$'\e[31m'
